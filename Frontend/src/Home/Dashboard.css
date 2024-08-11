@@ -1,0 +1,25 @@
+
+
+.dashboard {
+    padding: 20px;
+}
+
+.cards {
+    display: flex;
+    gap: 20px;
+}
+
+.card {
+    flex: 1;
+    padding: 20px;
+    border-radius: 10px;
+    color: #fff;
+}
+
+.card-products {
+    background: #4caf50;
+}
+
+.card-categories {
+    background: #2196f3;
+}
