@@ -14,12 +14,14 @@ const EditProduct = ({ show, onClose, onSave, productData }) => {
     if (productData) {
       setProduct(productData);
     }
-
     axios
-      .get("http://localhost:3000/categories")
-      .then((response) => setCategories(response.data))
-      .catch((error) => console.error("Error fetching categories:", error));
-  }, [productData]);
+    .get("http://localhost:3000/categories/")
+    .then((response) => {
+      console.log(response.data.message);
+      setCategories(response.data.categories);
+    })
+    .catch((error) => console.error("Error fetching customer:", error));
+}, [productData]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;

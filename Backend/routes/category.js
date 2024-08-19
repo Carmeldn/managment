@@ -5,12 +5,10 @@ var { Category } = require('../models')
 router.get('/', async (req, res) => {
     try {
         const categories = await Category.findAll();
-        if (!categories) {
-            return res.status(404).json({ error: 'Categories not found' });
-        }
-        return res.status(200).json(categories);
+        res.json({ success: true, message: "Successfully recovered categories", categories });
     } catch (error) {
-        return res.status(500).json({ error: 'Server error' });
+        console.error("Error while retrieving categories:", error.message);
+        res.status(500).json({ success: false, message: "server error" });
     }
 });
 
@@ -18,25 +16,32 @@ router.get("/:id", async (req, res) => {
     const { id } = req.params;
 
     try {
-        const category = await Category.findByPk(id);
-        if (!category) {
-            return res.status(404).json({ error: "Category not found" });
+        const category = await Category.findByPk(id)
+        if (category) {
+            res.json({ success: true, message: "Successfully recovered category", category });
         }
-        return res.status(200).json(category);
+        else{
+            res.status(404).json({ success: false, message: "Category not found" });
+        }
     } catch (error) {
-        return res.status(500).json({ error: 'Server error' });
+        console.error("Error Retrieving the category::", error.message);
+        res.status(500).json({ success: false, message: "server error" });
     }
 });
 
-router.post('/', async (req, res) => {
-    const { nom_category, description } = req.body;
+router.post('/', async(req,res)=>{
+    const {nom_category,description  } = req.body
     try {
-        const newCategory = await Category.create({ nom_category, description });
-        return res.status(201).json({ message: 'Category added successfully', newCategory });
+        const newCategory = await Category.create({
+          nom_category,
+          description,
+        });
+        res.status(201).json({ success: true, message: "Successfully created category", newCategory });
     } catch (error) {
-        return res.status(500).json({ error: 'Server error' });
+        console.error("Error creating the category:", error.message);
+    res.status(500).json({ success: false, message: "server error" });
     }
-});
+})
 
 router.put("/:id", async (req, res) => {
     const { id } = req.params;

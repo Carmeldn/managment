@@ -1,8 +1,6 @@
 var express = require("express");
 var router = express.Router();
 var { Order, Customer, Product } = require("../models");
-const { where } = require("sequelize");
-const { Model } = require("sequelize");
 
 router.get("/", async (req, res) => {
   try {
@@ -18,9 +16,18 @@ router.get("/", async (req, res) => {
         },
       ],
     });
-    res.status(200).json(orders);
+    res.json({
+      success: true,
+      message: "Successfully recovered orders",
+      orders,
+    });
   } catch (error) {
-    res.status(400).json({ error: error.message });
+    console.error("Error while retrieving orders:", error.message);
+    res.status(500).json({
+      success: false,
+      message: "Server error occurred while retrieving orders.",
+      error: error.message,
+    });
   }
 });
 
@@ -40,12 +47,25 @@ router.get("/:id", async (req, res) => {
       ],
     });
 
-    if (!order) {
-      return res.status(400).send("Order not found");
+    if (order) {
+      res.json({
+        success: true,
+        message: "Successfully recovered order",
+        order,
+      });
+    } else {
+      res.status(404).json({
+        success: false,
+        message: "Order not found.",
+      });
     }
-    res.status(200).json(order);
   } catch (error) {
-    res.status(400).json({ error: error.message });
+    console.error("Error retrieving the order:", error.message);
+    res.status(500).json({
+      success: false,
+      message: "Server error occurred while retrieving the order.",
+      error: error.message,
+    });
   }
 });
 
@@ -56,11 +76,17 @@ router.post("/", async (req, res) => {
     const product = await Product.findByPk(product_id);
 
     if (!customer || !product) {
-      return res.status(400).send("Customer or Product not found");
+      return res.status(400).json({
+        success: false,
+        message: "Customer or Product not found.",
+      });
     }
 
     if (quantity > product.quantite) {
-      return res.status(400).send("Insufficient product quantity");
+      return res.status(400).json({
+        success: false,
+        message: "Insufficient product quantity.",
+      });
     }
 
     const total_amount = quantity * product.prix;
@@ -72,13 +98,22 @@ router.post("/", async (req, res) => {
       total_amount,
     });
 
-    // Update product quantity
+    
     product.quantite -= quantity;
     await product.save();
 
-    res.status(201).json(newOrder);
+    res.status(201).json({
+      success: true,
+      message: "Order successfully created.",
+      newOrder,
+    });
   } catch (error) {
-    res.status(400).json({ error: error.message });
+    console.error("Error creating the order:", error.message);
+    res.status(400).json({
+      success: false,
+      message: "Error occurred while creating the order.",
+      error: error.message,
+    });
   }
 });
 
@@ -90,11 +125,17 @@ router.put("/:id", async (req, res) => {
     const product = await Product.findByPk(product_id);
 
     if (!order || !product) {
-      return res.status(400).send("Order or Product not found");
+      return res.status(400).json({
+        success: false,
+        message: "Order or Product not found.",
+      });
     }
 
     if (quantity > product.quantite) {
-      return res.status(400).send("Insufficient product quantity");
+      return res.status(400).json({
+        success: false,
+        message: "Insufficient product quantity.",
+      });
     }
 
     const total_amount = quantity * product.prix;
@@ -106,9 +147,18 @@ router.put("/:id", async (req, res) => {
       total_amount,
     });
 
-    res.status(200).json(order);
+    res.status(200).json({
+      success: true,
+      message: "Order successfully updated.",
+      order,
+    });
   } catch (error) {
-    res.status(400).json({ error: error.message });
+    console.error("Error updating the order:", error.message);
+    res.status(400).json({
+      success: false,
+      message: "Error occurred while updating the order.",
+      error: error.message,
+    });
   }
 });
 
@@ -117,22 +167,30 @@ router.delete("/:id", async (req, res) => {
   try {
     const order = await Order.findByPk(id);
     if (!order) {
-      return res.status(400).send("Order not found");
+      return res.status(400).json({
+        success: false,
+        message: "Order not found.",
+      });
     }
 
-    
     const product = await Product.findByPk(order.product_id);
 
     await product.update({
       quantite: product.quantite + order.quantity,
     });
 
-
-
     await order.destroy();
-    res.status(200).send("Order deleted");
+    res.status(200).json({
+      success: true,
+      message: "Order successfully deleted.",
+    });
   } catch (error) {
-    res.status(400).json({ error: error.message });
+    console.error("Error deleting the order:", error.message);
+    res.status(400).json({
+      success: false,
+      message: "Error occurred while deleting the order.",
+      error: error.message,
+    });
   }
 });
 

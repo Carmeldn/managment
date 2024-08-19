@@ -12,8 +12,11 @@ const CustomerList = () => {
   useEffect(() => {
     axios
       .get("http://localhost:3000/customers")
-      .then((response) => setCustomers(response.data))
-      .catch((error) => console.error("Error fetching customers:", error));
+      .then((response) => {
+        console.log(response.data.message);
+        setCustomers(response.data.customer);
+      })
+      .catch((error) => console.error("Error fetching customer:", error));
   }, []);
 
   const handleAddCustomer = async (customer) => {
@@ -22,11 +25,14 @@ const CustomerList = () => {
         "http://localhost:3000/customers",
         customer
       );
-      if (response.status === 200) {
-        setCustomers((prevCustomers) => [...prevCustomers, response.data]);
+      if (response.data.success) {
+        console.log(response.data.message);
+        const updatedCustomers = await axios.get("http://localhost:3000/customers");
+        setCustomers(updatedCustomers.data.customer);
+  
         setShowAddModal(false);
       } else {
-        console.error("Error adding customer");
+        console.error("Error adding customer:", response.data.message);
       }
     } catch (error) {
       console.error("Error adding customer:", error);
@@ -39,16 +45,17 @@ const CustomerList = () => {
         `http://localhost:3000/customers/${customer.id}`,
         customer
       );
-      if (response.status === 200) {
+      if (response.data.success) {
+        console.log(response.data.message);
         setCustomers((prevCustomers) =>
-          prevCustomers.map((c) => (c.id === customer.id ? customer : c))
+          prevCustomers.map((p) => (p.id === customer.id ? customer : p))
         );
         setShowEditModal(false);
-      } else {
-        console.error("Error editing customer");
+      }else {
+        console.error("Error editing product:", response.data.message);
       }
     } catch (error) {
-      console.error("Error editing customer:", error);
+      console.error("Error editing product:", error);
     }
   };
 
@@ -57,12 +64,12 @@ const CustomerList = () => {
       const response = await axios.delete(
         `http://localhost:3000/customers/${id}`
       );
-      if (response.status === 200) {
-        setCustomers((prevCustomers) =>
-          prevCustomers.filter((c) => c.id !== id)
-        );
+      if (response.data.success) {
+        console.log(response.data.message);
+        const updatedCustomers = await axios.get("http://localhost:3000/customers");
+        setCustomers(updatedCustomers.data.customer);
       } else {
-        console.error("Error deleting customer");
+        console.error("Error deleting customer:", response.data.message);
       }
     } catch (error) {
       console.error("Error deleting customer:", error);

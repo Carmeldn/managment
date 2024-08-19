@@ -19,7 +19,10 @@ const EditOrder = ({ show, onClose, onSave, orderData }) => {
     // Fetch products to populate the product dropdown
     axios
       .get("http://localhost:3000/product")
-      .then((response) => setProducts(response.data))
+      .then((response) => {
+        console.log(response.data.message);
+        setProducts(response.data.products);
+      })
       .catch((error) => console.error("Error fetching products:", error));
   }, []);
 

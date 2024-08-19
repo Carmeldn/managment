@@ -12,18 +12,24 @@ const OrderList = () => {
   useEffect(() => {
     axios
       .get("http://localhost:3000/orders")
-      .then((response) => setOrders(response.data))
+      .then((response) => {
+        console.log(response.data.message);
+        setOrders(response.data.orders);
+      })
       .catch((error) => console.error("Error fetching orders:", error));
   }, []);
 
   const handleAddOrder = async (order) => {
     try {
       const response = await axios.post("http://localhost:3000/orders", order);
-      if (response.status === 201) {
-        setOrders((prevOrders) => [...prevOrders, response.data]);
+      if (response.data.success) {
+        console.log(response.data.message);
+        const updatedOrders = await axios.get("http://localhost:3000/orders");
+        setOrders(updatedOrders.data.orders);
+  
         setShowAddModal(false);
       } else {
-        console.error("Error adding order");
+        console.error("Error adding orders:", response.data.message);
       }
     } catch (error) {
       console.error("Error adding order:", error);
@@ -36,13 +42,14 @@ const OrderList = () => {
         `http://localhost:3000/orders/${order.id}`,
         order
       );
-      if (response.status === 200) {
+      if (response.data.success) {
+        console.log(response.data.message);
         setOrders((prevOrders) =>
-          prevOrders.map((o) => (o.id === order.id ? order : o))
+          prevOrders.map((p) => (p.id === order.id ? order : p))
         );
         setShowEditModal(false);
       } else {
-        console.error("Error editing order");
+        console.error("Error editing order:", response.data.message);
       }
     } catch (error) {
       console.error("Error editing order:", error);
@@ -52,10 +59,13 @@ const OrderList = () => {
   const handleDeleteOrder = async (id) => {
     try {
       const response = await axios.delete(`http://localhost:3000/orders/${id}`);
-      if (response.status === 200) {
-        setOrders((prevOrders) => prevOrders.filter((o) => o.id !== id));
+      if (response.data.success) {
+        console.log(response.data.message);
+        // Rafraîchir la liste des produits
+        const updatedOrders = await axios.get("http://localhost:3000/orders");
+        setOrders(updatedOrders.data.orders);
       } else {
-        console.error("Error deleting order");
+        console.error("Error deleting order:", response.data.message);
       }
     } catch (error) {
       console.error("Error deleting order:", error);

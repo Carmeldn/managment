@@ -12,6 +12,7 @@ var productRouter = require('./routes/product')
 var customerRouter = require('./routes/customer')
 var orderRouter = require('./routes/order')
 var statistiqueRouter = require('./routes/statistique')
+const { authenticateToken } = require("./middleware/authentificateToken");
 var app = express();
 
 // view engine setup

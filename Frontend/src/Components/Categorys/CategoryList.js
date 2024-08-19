@@ -13,10 +13,11 @@ function CategoryList() {
   useEffect(() => {
     axios
       .get("http://localhost:3000/categories/")
-      .then((response) => setCategories(response.data))
-      .catch((error) =>
-        console.log("Erreur lors de la récupération des catégories:", error)
-      );
+      .then((response) => {
+        console.log(response.data.message);
+        setCategories(response.data.categories);
+      })
+      .catch((error) => console.error("Error fetching customer:", error));
   }, []);
 
   const handleAddCategory = async (category) => {
@@ -25,15 +26,17 @@ function CategoryList() {
         "http://localhost:3000/categories",
         category
       );
-      if (response.status === 201) {
-        setCategories((prevCategories) => [...prevCategories, response.data.newCategory]);
-        setShowAddModal(false); 
-        console.log(response.data.message); // Affiche le message de succès
+      if (response.data.success) {
+        console.log(response.data.message);
+        const updatedCategories = await axios.get("http://localhost:3000/categories/");
+        setCategories(updatedCategories.data.categories);
+  
+        setShowAddModal(false);
       } else {
-        console.error("Erreur lors de l'ajout de la catégorie");
+        console.error("Error adding category:", response.data.message);
       }
     } catch (error) {
-      console.error("Erreur lors de l'ajout de la catégorie:", error);
+      console.error("Error adding category:", error);
     }
   };
 
@@ -48,7 +51,7 @@ function CategoryList() {
           prevCategories.map((c) => (c.id === category.id ? category : c))
         );
         setShowEditModal(false); 
-        console.log(response.data.message); // Affiche le message de succès
+        console.log(response.data.message);
       } else {
         console.error("Erreur lors de la modification de la catégorie");
       }

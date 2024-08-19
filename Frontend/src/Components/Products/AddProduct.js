@@ -12,9 +12,12 @@ const AddProduct = ({ show, onClose, onSave }) => {
 
   useEffect(() => {
     axios
-      .get("http://localhost:3000/categories")
-      .then((response) => setCategories(response.data))
-      .catch((error) => console.error("Error fetching categories:", error));
+      .get("http://localhost:3000/categories/")
+      .then((response) => {
+        console.log(response.data.message);
+        setCategories(response.data.categories);
+      })
+      .catch((error) => console.error("Error fetching customer:", error));
   }, []);
 
   const handleChange = (e) => {

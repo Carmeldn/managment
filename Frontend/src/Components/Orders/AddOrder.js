@@ -13,14 +13,20 @@ const AddOrder = ({ show, onClose, onSave }) => {
   useEffect(() => {
     if (show) {
       axios
-        .get("http://localhost:3000/customers")
-        .then((response) => setCustomers(response.data))
-        .catch((error) => console.error("Error fetching customers:", error));
+      .get("http://localhost:3000/customers")
+      .then((response) => {
+        console.log(response.data.message);
+        setCustomers(response.data.customer);
+      })
+      .catch((error) => console.error("Error fetching customer:", error));
 
       axios
-        .get("http://localhost:3000/product")
-        .then((response) => setProducts(response.data))
-        .catch((error) => console.error("Error fetching products:", error));
+      .get("http://localhost:3000/product")
+      .then((response) => {
+        console.log(response.data.message);
+        setProducts(response.data.products);
+      })
+      .catch((error) => console.error("Error fetching products:", error));
     }
   }, [show]);
 

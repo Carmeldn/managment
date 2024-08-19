@@ -1,20 +1,37 @@
-import React, { createContext, useContext, useState } from "react";
+// AuthContext.js
+import React, { createContext, useState, useEffect, useContext } from 'react';
 
 const AuthContext = createContext();
 
-export function AuthProvider({ children }) {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+export const AuthProvider = ({ children }) => {
+  const [estAuthentifie, setEstAuthentifie] = useState(false);
 
-  const login = () => setIsAuthenticated(true);
-  const logout = () => setIsAuthenticated(false);
+  useEffect(() => {
+    // Restaurer l'état d'authentification à partir de localStorage
+    const token = localStorage.getItem('token');
+    if (token) {
+      setEstAuthentifie(true);
+    }
+  }, []);
+
+  const login = () => {
+    setEstAuthentifie(true);
+  };
+
+  const logout = () => {
+    localStorage.removeItem('token');
+    setEstAuthentifie(false);
+  };
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated, login, logout }}>
+    <AuthContext.Provider value={{ estAuthentifie, login, logout }}>
       {children}
     </AuthContext.Provider>
   );
-}
+};
 
-export function useAuth() {
+export const useAuth = () => {
   return useContext(AuthContext);
-}
+};
+
+export default AuthContext;

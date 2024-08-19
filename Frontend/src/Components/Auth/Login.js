@@ -1,7 +1,7 @@
+// Login.js
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { useAuth } from "./AuthContext"; 
-
+import { useAuth } from "./AuthContext";
 import "../../styles/main.css";
 import axios from "axios";
 
@@ -9,7 +9,7 @@ function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
-  const { login } = useAuth();
+  const { login } = useAuth(); 
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
@@ -19,18 +19,15 @@ function Login() {
         email,
         password,
       });
-
       console.log(response.data.message); 
-
+      localStorage.setItem("token", response.data.token);
       login(); 
       navigate("/"); 
     } catch (error) {
       if (error.response && error.response.data) {
-        console.log(error.response.data.error); 
         setError(error.response.data.error); 
       } else {
-        setError("Error 404");
-        console.log(error); 
+        setError("Erreur de connexion");
       }
     }
   };
@@ -40,7 +37,6 @@ function Login() {
       <form className="auth-form" onSubmit={handleSubmit}>
         <h2>Login</h2>
         {error && <div className="error">{error}</div>}
-
         <label>Email:</label>
         <input
           type="email"
@@ -56,7 +52,7 @@ function Login() {
           required
         />
         <button type="submit">Login</button>
-        <Link to="/register">Don't have an account? Register</Link>
+        <Link to="/register">Vous n'avez pas de compte ? Inscrivez-vous</Link>
       </form>
     </div>
   );

@@ -29,10 +29,9 @@ import "./styles/main.css";
 function LayoutWrapper({ children }) {
   const location = useLocation();
   const authRoutes = ["/login", "/register"];
-  const { isAuthenticated } = useAuth();
+  const { estAuthentifie } = useAuth(); 
 
-  
-  if (!isAuthenticated && !authRoutes.includes(location.pathname)) {
+  if (!estAuthentifie && !authRoutes.includes(location.pathname)) {
     return <Navigate to="/login" />;
   }
 
@@ -46,6 +45,7 @@ function LayoutWrapper({ children }) {
     </div>
   );
 }
+
  
 function App() {
   return (
