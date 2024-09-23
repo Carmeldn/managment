@@ -29,7 +29,7 @@ app.use(cors());
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/categories', categoryRouter);
-app.use('/product',productRouter);
+app.use('/products',productRouter);
 app.use('/customers',customerRouter);
 app.use('/orders', orderRouter);
 app.use('/statistique', statistiqueRouter);

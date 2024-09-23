@@ -1,6 +1,7 @@
 var express = require('express')
 var router = express.Router()
-var { Category } = require('../models')
+var { Category,Product } = require('../models');
+const { Model } = require('sequelize');
 
 router.get('/', async (req, res) => {
     try {
@@ -25,6 +26,31 @@ router.get("/:id", async (req, res) => {
         }
     } catch (error) {
         console.error("Error Retrieving the category::", error.message);
+        res.status(500).json({ success: false, message: "server error" });
+    }
+});
+
+router.get("/:id/products", async (req, res) => {
+    const { id } = req.params;
+
+    try {
+        const category = await Category.findByPk(id, {
+            include: [{
+                model: Product,
+                as: 'products',
+            }],
+        });
+
+        if (category) {
+            res.json({ success: true, message: "Successfully recovered category and products", category });
+        } else {
+            res.status(404).json({ 
+                success: false, 
+                message: "Category not found" 
+            });
+        }
+    } catch (error) {
+        console.error("Error retrieving the category and products:", error.message);
         res.status(500).json({ success: false, message: "server error" });
     }
 });

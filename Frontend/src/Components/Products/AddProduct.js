@@ -4,7 +4,6 @@ import axios from "axios";
 const AddProduct = ({ show, onClose, onSave }) => {
   const [product, setProduct] = useState({
     nom: "",
-    quantite: "",
     prix: "",
     category_id: "",
   });
@@ -12,7 +11,7 @@ const AddProduct = ({ show, onClose, onSave }) => {
 
   useEffect(() => {
     axios
-      .get("http://localhost:3000/categories/")
+      .get("http://10.250.1.9:3000/categories/")
       .then((response) => {
         console.log(response.data.message);
         setCategories(response.data.categories);
@@ -28,7 +27,7 @@ const AddProduct = ({ show, onClose, onSave }) => {
   const handleSubmit = (e) => {
     e.preventDefault();
     onSave(product);
-    setProduct({ nom: "", quantite: "", prix: "", category_id: "" });
+    setProduct({ nom: "", prix: "", category_id: "" });
   };
 
   if (!show) {
@@ -48,14 +47,6 @@ const AddProduct = ({ show, onClose, onSave }) => {
             type="text"
             name="nom"
             value={product.nom}
-            onChange={handleChange}
-            required
-          />
-          <label>Quantity:</label>
-          <input
-            type="number"
-            name="quantite"
-            value={product.quantite}
             onChange={handleChange}
             required
           />

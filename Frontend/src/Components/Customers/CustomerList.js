@@ -2,7 +2,8 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import AddCustomer from "./AddCustomer";
 import EditCustomer from "./EditCustomer";
-
+import { toast } from "react-toastify";
+import Swal from "sweetalert2";
 const CustomerList = () => {
   const [customers, setCustomers] = useState([]);
   const [showAddModal, setShowAddModal] = useState(false);
@@ -11,7 +12,7 @@ const CustomerList = () => {
 
   useEffect(() => {
     axios
-      .get("http://localhost:3000/customers")
+      .get("http://10.250.1.9:3000/customers")
       .then((response) => {
         console.log(response.data.message);
         setCustomers(response.data.customer);
@@ -22,27 +23,30 @@ const CustomerList = () => {
   const handleAddCustomer = async (customer) => {
     try {
       const response = await axios.post(
-        "http://localhost:3000/customers",
+        "http://10.250.1.9:3000/customers",
         customer
       );
       if (response.data.success) {
         console.log(response.data.message);
-        const updatedCustomers = await axios.get("http://localhost:3000/customers");
+        const updatedCustomers = await axios.get("http://10.250.1.9:3000/customers");
         setCustomers(updatedCustomers.data.customer);
+        toast.success("Customer added successfully")
   
         setShowAddModal(false);
       } else {
         console.error("Error adding customer:", response.data.message);
+        toast.error("Failed to add customer. Please try again.")
       }
     } catch (error) {
       console.error("Error adding customer:", error);
+      toast.error("Failed to add customer. Please try again.")
     }
   };
 
   const handleEditCustomer = async (customer) => {
     try {
       const response = await axios.put(
-        `http://localhost:3000/customers/${customer.id}`,
+        `http://10.250.1.9:3000/customers/${customer.id}`,
         customer
       );
       if (response.data.success) {
@@ -51,30 +55,58 @@ const CustomerList = () => {
           prevCustomers.map((p) => (p.id === customer.id ? customer : p))
         );
         setShowEditModal(false);
+        toast.success("Customer updated successfully")
       }else {
         console.error("Error editing product:", response.data.message);
+        toast.error("Error updating customer")
       }
     } catch (error) {
       console.error("Error editing product:", error);
+      toast.error("Error updating customer")
+
     }
   };
 
   const handleDeleteCustomer = async (id) => {
     try {
       const response = await axios.delete(
-        `http://localhost:3000/customers/${id}`
+        `http://10.250.1.9:3000/customers/${id}`
       );
       if (response.data.success) {
         console.log(response.data.message);
-        const updatedCustomers = await axios.get("http://localhost:3000/customers");
+        const updatedCustomers = await axios.get("http://10.250.1.9:3000/customers");
         setCustomers(updatedCustomers.data.customer);
+        toast.success("Customer deleted successfully");
       } else {
         console.error("Error deleting customer:", response.data.message);
+        toast.error("Error deleting customer.");
       }
-    } catch (error) {
+    } catch (error) { 
       console.error("Error deleting customer:", error);
+      toast.error("Error deleting customer.");
+
     }
   };
+
+  const confirmDeleteCustomer = (id) => {
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Yes !",
+      cancelButtonText: "No !",
+      reverseButtons: true,
+    }).then((result) => {
+      if (result.isConfirmed) {
+        handleDeleteCustomer(id);
+        Swal.fire("Deleted!", "The customer has been deleted.", "success");
+      } else if (result.dismiss === Swal.DismissReason.cancel) {
+        
+      }
+    });
+  };
+
 
   return (
     <div className="customer-list-container">
@@ -115,7 +147,7 @@ const CustomerList = () => {
                 </button>
                 <button
                   className="delete-btn"
-                  onClick={() => handleDeleteCustomer(customer.id)}
+                  onClick={() => confirmDeleteCustomer(customer.id)}
                 >
                   Delete
                 </button>

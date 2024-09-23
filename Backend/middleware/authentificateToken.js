@@ -1,4 +1,3 @@
-
 const jwt = require('jsonwebtoken');
 const SECRET_KEY = "za5ed7xSQ1W2s@po!k?56G"; 
 

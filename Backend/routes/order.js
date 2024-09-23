@@ -82,12 +82,6 @@ router.post("/", async (req, res) => {
       });
     }
 
-    if (quantity > product.quantite) {
-      return res.status(400).json({
-        success: false,
-        message: "Insufficient product quantity.",
-      });
-    }
 
     const total_amount = quantity * product.prix;
 
@@ -98,8 +92,6 @@ router.post("/", async (req, res) => {
       total_amount,
     });
 
-    
-    product.quantite -= quantity;
     await product.save();
 
     res.status(201).json({
@@ -175,9 +167,6 @@ router.delete("/:id", async (req, res) => {
 
     const product = await Product.findByPk(order.product_id);
 
-    await product.update({
-      quantite: product.quantite + order.quantity,
-    });
 
     await order.destroy();
     res.status(200).json({

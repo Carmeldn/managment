@@ -22,7 +22,7 @@ function Register() {
 
     try {
       const response = await axios.post(
-        'http://localhost:3000/users/register',
+        'http://10.250.1.9:3000/users/register',
         {
           nom,
           prenom,

@@ -22,10 +22,6 @@ module.exports = {
         type: Sequelize.STRING,
         allowNull: false,
       },
-      quantite: {
-        type: Sequelize.INTEGER,
-        allowNull: false,
-      },
       prix: {
         type: Sequelize.FLOAT,
         allowNull: false,

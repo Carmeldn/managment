@@ -4,6 +4,8 @@ import axios from "axios";
 const AddOrder = ({ show, onClose, onSave }) => {
   const [customers, setCustomers] = useState([]);
   const [products, setProducts] = useState([]);
+  const [selectedProductPrice, setSelectedProductPrice] = useState(0);
+  const [totalAmount, setTotalAmount] = useState(0);
   const [order, setOrder] = useState({
     customer_id: "",
     product_id: "",
@@ -12,33 +14,47 @@ const AddOrder = ({ show, onClose, onSave }) => {
 
   useEffect(() => {
     if (show) {
+      // show customers
       axios
-      .get("http://localhost:3000/customers")
-      .then((response) => {
-        console.log(response.data.message);
-        setCustomers(response.data.customer);
-      })
-      .catch((error) => console.error("Error fetching customer:", error));
+        .get("http://10.250.1.9:3000/customers")
+        .then((response) => {
+          setCustomers(response.data.customer);
+        })
+        .catch((error) => console.error("Error fetching customer:", error));
 
+      // show products
       axios
-      .get("http://localhost:3000/product")
-      .then((response) => {
-        console.log(response.data.message);
-        setProducts(response.data.products);
-      })
-      .catch((error) => console.error("Error fetching products:", error));
+        .get("http://10.250.1.9:3000/products")
+        .then((response) => {
+          setProducts(response.data.products);
+        })
+        .catch((error) => console.error("Error fetching products:", error));
     }
   }, [show]);
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setOrder({ ...order, [name]: value });
+  const handleProductChange = (e) => {
+    const selectedProductId = e.target.value;
+    const selectedProduct = products.find(
+      (product) => product.id === parseInt(selectedProductId)
+    );
+    setOrder({ ...order, product_id: selectedProductId });
+    if (selectedProduct) {
+      setSelectedProductPrice(selectedProduct.prix); 
+    }
+  };
+
+  const handleQuantityChange = (e) => {
+    const quantity = e.target.value;
+    setOrder({ ...order, quantity });
+    setTotalAmount(quantity * selectedProductPrice); 
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
     onSave(order);
     setOrder({ customer_id: "", product_id: "", quantity: "" });
+    setSelectedProductPrice(0);
+    setTotalAmount(0);
   };
 
   if (!show) {
@@ -57,7 +73,7 @@ const AddOrder = ({ show, onClose, onSave }) => {
           <select
             name="customer_id"
             value={order.customer_id}
-            onChange={handleChange}
+            onChange={(e) => setOrder({ ...order, customer_id: e.target.value })}
             required
           >
             <option value="" disabled>
@@ -69,12 +85,12 @@ const AddOrder = ({ show, onClose, onSave }) => {
               </option>
             ))}
           </select>
-            
+
           <label>Product:</label>
           <select
             name="product_id"
             value={order.product_id}
-            onChange={handleChange}
+            onChange={handleProductChange}
             required
           >
             <option value="" disabled>
@@ -87,16 +103,23 @@ const AddOrder = ({ show, onClose, onSave }) => {
             ))}
           </select>
 
+          <label>Unit Price:</label>
+          <input type="text" value={selectedProductPrice} disabled />
+
           <label>Quantity:</label>
           <input
             type="number"
             name="quantity"
             value={order.quantity}
-            onChange={handleChange}
+            onChange={handleQuantityChange}
             min="1"
             required
           />
- 
+
+         
+          <label>Total Amount:</label>
+          <input type="text" value={totalAmount} disabled />
+
           <button type="submit">Save</button>
         </form>
       </div>

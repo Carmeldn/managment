@@ -2,7 +2,8 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import AddProduct from "./AddProduct";
 import EditProduct from "./EditProduct";
-
+import { toast } from "react-toastify";
+import Swal from "sweetalert2";
 const ProductList = () => {
   const [products, setProducts] = useState([]);
   const [showAddModal, setShowAddModal] = useState(false);
@@ -11,7 +12,7 @@ const ProductList = () => {
 
   useEffect(() => {
     axios
-      .get("http://localhost:3000/product")
+      .get("http://10.250.1.9:3000/products")
       .then((response) => {
         console.log(response.data.message);
         setProducts(response.data.products);
@@ -21,55 +22,89 @@ const ProductList = () => {
 
   const handleAddProduct = async (product) => {
     try {
-      const response = await axios.post("http://localhost:3000/product", product);
+      const response = await axios.post("http://10.250.1.9:3000/products", product);
       if (response.data.success) {
         console.log(response.data.message);
-        const updatedProducts = await axios.get("http://localhost:3000/product");
+        const updatedProducts = await axios.get("http://10.250.1.9:3000/products");
         setProducts(updatedProducts.data.products);
-  
+        toast.success("Product added successfully");
+
         setShowAddModal(false);
       } else {
         console.error("Error adding product:", response.data.message);
+        toast.error("Failed to add product. Please try again.");
+
       }
     } catch (error) {
       console.error("Error adding product:", error);
+      toast.error("Failed to add product. Please try again.");
+
     }
   };
   
 
   const handleEditProduct = async (product) => {
     try {
-      const response = await axios.put(`http://localhost:3000/product/${product.id}`, product);
+      const response = await axios.put(`http://10.250.1.9:3000/products/${product.id}`, product);
       if (response.data.success) {
         console.log(response.data.message);
         setProducts((prevProducts) =>
           prevProducts.map((p) => (p.id === product.id ? product : p))
         );
+
         setShowEditModal(false);
+        console.log(response.data.message);
+        toast.success("Product added successfully");
+
       } else {
         console.error("Error editing product:", response.data.message);
+        toast.error("Error updating product.");
       }
     } catch (error) {
       console.error("Error editing product:", error);
+      toast.error("Error updating product.");
     }
   };
 
   const handleDeleteProduct = async (id) => {
     try {
-      const response = await axios.delete(`http://localhost:3000/product/${id}`);
+      const response = await axios.delete(`http://10.250.1.9:3000/products/${id}`);
       if (response.data.success) {
         console.log(response.data.message);
         // Rafraîchir la liste des produits
-        const updatedProducts = await axios.get("http://localhost:3000/product");
+        const updatedProducts = await axios.get("http://10.250.1.9:3000/products");
         setProducts(updatedProducts.data.products);
+        toast.success("Product deleted successfully");
       } else {
         console.error("Error deleting product:", response.data.message);
+        toast.error("Error deleting product.");
       }
     } catch (error) {
       console.error("Error deleting product:", error);
+      toast.error("Error deleting product.");
     }
   };
   
+  const confirmDeleteProduct = (id) => {
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Yes !",
+      cancelButtonText: "No !",
+      reverseButtons: true,
+    }).then((result) => {
+      if (result.isConfirmed) {
+        handleDeleteProduct(id);
+        Swal.fire("Deleted!", "The product has been deleted.", "success");
+      } else if (result.dismiss === Swal.DismissReason.cancel) {
+        
+      }
+    });
+  };
+
+
 
   return (
     <div className="product-list-container">
@@ -80,7 +115,6 @@ const ProductList = () => {
         <thead>
           <tr>
             <th>Name</th>
-            <th>Quantity</th>
             <th>Price</th>
             <th>Category</th>
             <th>Actions</th>
@@ -90,7 +124,6 @@ const ProductList = () => {
           {products.map((product) => (
             <tr key={product.id}>
               <td>{product.nom}</td>
-              <td>{product.quantite}</td>
               <td>{product.prix}</td>
               <td>
                 {product.categories ? product.categories.nom_category : "No Category"}
@@ -105,7 +138,7 @@ const ProductList = () => {
                 >
                   Edit
                 </button>
-                <button className="delete-btn" onClick={() => handleDeleteProduct(product.id)}>
+                <button className="delete-btn" onClick={() => confirmDeleteProduct(product.id)}>
                   Delete
                 </button>
               </td>

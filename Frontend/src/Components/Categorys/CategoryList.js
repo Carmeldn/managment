@@ -3,6 +3,8 @@ import axios from "axios";
 import AddCategory from "./AddCategory";
 import EditCategory from "./EditCategory";
 import "../../styles/main.css";
+import { toast } from "react-toastify";
+import Swal from "sweetalert2";
 
 function CategoryList() {
   const [categories, setCategories] = useState([]);
@@ -29,14 +31,17 @@ function CategoryList() {
       if (response.data.success) {
         console.log(response.data.message);
         const updatedCategories = await axios.get("http://localhost:3000/categories/");
+        toast.success("Category added successfully");
         setCategories(updatedCategories.data.categories);
-  
         setShowAddModal(false);
       } else {
         console.error("Error adding category:", response.data.message);
+        toast.error("Failed to add category. Please try again.");
       }
     } catch (error) {
       console.error("Error adding category:", error);
+      toast.error("Failed to add category. Please try again.");
+      setShowAddModal(false);
     }
   };
 
@@ -50,13 +55,17 @@ function CategoryList() {
         setCategories((prevCategories) =>
           prevCategories.map((c) => (c.id === category.id ? category : c))
         );
-        setShowEditModal(false); 
+        toast.success("Category updated successfully.");
+        setShowEditModal(false);
         console.log(response.data.message);
+        
       } else {
-        console.error("Erreur lors de la modification de la catégorie");
+        console.error("Error updating category");
+        toast.error("Error updating category.");
       }
     } catch (error) {
-      console.error("Erreur lors de la modification de la catégorie:", error);
+      console.error("Error updating category:", error);
+      toast.error("Error updating category.");
     }
   };
 
@@ -69,13 +78,35 @@ function CategoryList() {
         setCategories((prevCategories) =>
           prevCategories.filter((c) => c.id !== id)
         );
+        toast.success("Category deleted successfully");
         console.log(response.data.message); // Affiche le message de succès
       } else {
-        console.error("Erreur lors de la suppression de la catégorie");
+        console.error("Error deleting category");
+        toast.error("Error deleting category.");
       }
     } catch (error) {
-      console.error("Erreur lors de la suppression de la catégorie:", error);
+      console.error("Error deleting category:", error);
+      toast.error("Error deleting category.");
     }
+  };
+
+  const confirmDeleteCategory = (id) => {
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Yes !",
+      cancelButtonText: "No !",
+      reverseButtons: true,
+    }).then((result) => {
+      if (result.isConfirmed) {
+        handleDeleteCategory(id);
+        Swal.fire("Deleted!", "The category has been deleted.", "success");
+      } else if (result.dismiss === Swal.DismissReason.cancel) {
+        
+      }
+    });
   };
 
   return (
@@ -111,7 +142,7 @@ function CategoryList() {
                 </button>
                 <button
                   className="delete-btn"
-                  onClick={() => handleDeleteCategory(category.id)}
+                  onClick={() => confirmDeleteCategory(category.id)}
                 >
                   Delete
                 </button>

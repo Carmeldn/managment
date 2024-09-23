@@ -4,7 +4,6 @@ import axios from "axios";
 const EditProduct = ({ show, onClose, onSave, productData }) => {
   const [product, setProduct] = useState({
     nom: "",
-    quantite: "",
     prix: "",
     category_id: "",
   });
@@ -15,7 +14,7 @@ const EditProduct = ({ show, onClose, onSave, productData }) => {
       setProduct(productData);
     }
     axios
-    .get("http://localhost:3000/categories/")
+    .get("http://10.250.1.9:3000/categories/")
     .then((response) => {
       console.log(response.data.message);
       setCategories(response.data.categories);
@@ -50,14 +49,6 @@ const EditProduct = ({ show, onClose, onSave, productData }) => {
             type="text"
             name="nom"
             value={product.nom}
-            onChange={handleChange}
-            required
-          />
-          <label>Quantity:</label>
-          <input
-            type="number"
-            name="quantite"
-            value={product.quantite}
             onChange={handleChange}
             required
           />

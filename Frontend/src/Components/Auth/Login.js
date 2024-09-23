@@ -1,7 +1,5 @@
-// Login.js
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { useAuth } from "./AuthContext";
 import "../../styles/main.css";
 import axios from "axios";
 
@@ -9,23 +7,21 @@ function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
-  const { login } = useAuth(); 
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post("http://localhost:3000/users/login", {
+      const response = await axios.post("http://10.250.1.9:3000/users/login", {
         email,
         password,
       });
-      console.log(response.data.message); 
-      localStorage.setItem("token", response.data.token);
-      login(); 
-      navigate("/"); 
+      console.log(response.data.message);
+      localStorage.setItem("token", response.data.token); 
+      navigate("/");
     } catch (error) {
       if (error.response && error.response.data) {
-        setError(error.response.data.error); 
+        setError(error.response.data.error);
       } else {
         setError("Erreur de connexion");
       }
