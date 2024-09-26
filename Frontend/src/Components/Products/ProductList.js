@@ -54,7 +54,7 @@ const ProductList = () => {
 
         setShowEditModal(false);
         console.log(response.data.message);
-        toast.success("Product added successfully");
+        toast.success("Product updated successfully");
 
       } else {
         console.error("Error editing product:", response.data.message);
@@ -71,7 +71,6 @@ const ProductList = () => {
       const response = await axios.delete(`http://10.250.1.9:3000/products/${id}`);
       if (response.data.success) {
         console.log(response.data.message);
-        // Rafraîchir la liste des produits
         const updatedProducts = await axios.get("http://10.250.1.9:3000/products");
         setProducts(updatedProducts.data.products);
         toast.success("Product deleted successfully");

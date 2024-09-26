@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import "../../styles/main.css";
+import { toast } from "react-toastify";
 
 function Register() {
   const [nom, setNom] = useState("");
@@ -34,13 +35,16 @@ function Register() {
       alert(response.data.message);
       console.log(response.data.message);
       navigate("/login"); 
+      toast.success("Merci pour votre inscription. Veuillez cliquer sur le lien suivant pour vérifier votre email :")
     } catch (error) {
       if (error.response && error.response.data) {
         console.log(error.response.data.error)
         setError(error.response.data.error); 
+        toast.error("erreur d inscription")
       } else {
         console.log(error)
         setError(error);
+        toast.error("erreur d inscription")
       }
     }
   };

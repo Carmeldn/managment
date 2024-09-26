@@ -40,6 +40,7 @@ const CustomerList = () => {
     } catch (error) {
       console.error("Error adding customer:", error);
       toast.error("Failed to add customer. Please try again.")
+      
     }
   };
 
@@ -100,7 +101,7 @@ const CustomerList = () => {
     }).then((result) => {
       if (result.isConfirmed) {
         handleDeleteCustomer(id);
-        Swal.fire("Deleted!", "The customer has been deleted.", "success");
+       
       } else if (result.dismiss === Swal.DismissReason.cancel) {
         
       }
@@ -119,7 +120,7 @@ const CustomerList = () => {
       <table>
         <thead>
           <tr>
-            <th>ID</th>
+            
             <th>First Name</th>
             <th>Last Name</th>
             <th>Phone</th>
@@ -130,7 +131,6 @@ const CustomerList = () => {
         <tbody>
           {customers.map((customer) => (
             <tr key={customer.id}>
-              <td>{customer.id}</td>
               <td>{customer.first_name}</td>
               <td>{customer.last_name}</td>
               <td>{customer.phone}</td>

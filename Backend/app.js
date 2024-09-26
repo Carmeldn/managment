@@ -12,7 +12,9 @@ var productRouter = require('./routes/product')
 var customerRouter = require('./routes/customer')
 var orderRouter = require('./routes/order')
 var statistiqueRouter = require('./routes/statistique')
+
 const { authenticateToken } = require("./middleware/authentificateToken");
+const initializePassport = require('./middleware/passport-config');
 var app = express();
 
 // view engine setup
@@ -25,6 +27,10 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(cors());
+
+// Initialize Passport with the config
+
+
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
