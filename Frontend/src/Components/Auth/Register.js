@@ -35,7 +35,7 @@ function Register() {
       alert(response.data.message);
       console.log(response.data.message);
       navigate("/login"); 
-      toast.success("Merci pour votre inscription. Veuillez cliquer sur le lien suivant pour vérifier votre email :")
+      toast.success("Merci pour votre inscription. Vérifiez votre email")
     } catch (error) {
       if (error.response && error.response.data) {
         console.log(error.response.data.error)

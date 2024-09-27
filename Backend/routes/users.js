@@ -60,7 +60,7 @@ router.post("/register", async (req, res) => {
       console.log('Email envoyé : ' + info.response);
     });
 
-    res.status(201).json({ message: "Inscription réussie. Veuillez vérifier votre email." });
+    res.status(201).json({ message: "Inscription réussie. Veuillez vérifier votre adresse email." });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Erreur serveur lors de l\'inscription.' });
